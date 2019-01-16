@@ -53,10 +53,27 @@ file(READ pkgconfig/rtprocessin.pc RTPROCESSIN)
 file(WRITE pkgconfig/rtprocess.pc "prefix=/${PC_PREFIX}")
 file(APPEND pkgconfig/rtprocess.pc ${RTPROCESSIN})
 
+if(UNIX)
+    get_property(LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
 
+    if ("${LIB64}" STREQUAL "TRUE")
+        set(LIBSUFFIX 64)
+    else()
+        set(LIBSUFFIX "")
+    endif()
 
-#set location for library installation
-add_library(rtprocess ${LIBRARY_TYPE} ${SOURCES})
-install(TARGETS rtprocess DESTINATION ${INSTALL_PREFIX}lib)
-install(FILES "pkgconfig/rtprocess.pc" DESTINATION ${INSTALL_PREFIX}lib/pkgconfig)
-install(FILES "src/include/librtprocess.h" DESTINATION ${INSTALL_PREFIX}include/rtprocess)
+    set(INSTALL_LIB_DIR     lib${LIBSUFFIX} CACHE PATH "Installation
+    directory for libraries")
+    mark_as_advanced(INSTALL_LIB_DIR)
+
+    #set location for library installation
+    add_library(rtprocess ${LIBRARY_TYPE} ${SOURCES})
+    install(TARGETS rtprocess DESTINATION ${INSTALL_LIB_DIR})
+    install(FILES "pkgconfig/rtprocess.pc" DESTINATION ${INSTALL_LIB_DIR}/pkgconfig)
+    install(FILES "src/include/librtprocess.h" DESTINATION include/rtprocess)
+else()
+    add_library(rtprocess ${LIBRARY_TYPE} ${SOURCES})
+    install(TARGETS rtprocess DESTINATION ${INSTALL_PREFIX}lib)
+    install(FILES "pkgconfig/rtprocess.pc" DESTINATION ${INSTALL_PREFIX}lib/pkgconfig)
+    install(FILES "src/include/librtprocess.h" DESTINATION ${INSTALL_PREFIX}include/rtprocess)
+endif()
