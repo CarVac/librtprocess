@@ -27,7 +27,7 @@
 
 using namespace librtprocess;
 
-rpError WB_apply(int width, int height, float ** rawData, float redmult, float greenmult, float bluemult, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel)
+rpError WB_apply(int width, int height, float ** rawData, float redmult, float green1mult, float green2mult, float bluemult, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel)
 {
 	BENCHFUN
 	
@@ -37,15 +37,16 @@ rpError WB_apply(int width, int height, float ** rawData, float redmult, float g
 		{ 1.0, 1.0 }
 	};
 	
-	if (!validateBayerCfa(3, cfarray)) {
+	if (!validateBayerCfa(4, cfarray)) {
         return RP_WRONG_CFA;
     }
 	
 	for (int x=0; x<2; x++) {
 		for (int y=0; y<2; y++) {
 			if (cfarray[x][y] == 0) cfamults[x][y] = redmult;
-			if (cfarray[x][y] == 1) cfamults[x][y] = greenmult;
+			if (cfarray[x][y] == 1) cfamults[x][y] = green1mult;
 			if (cfarray[x][y] == 2) cfamults[x][y] = bluemult;
+			if (cfarray[x][y] == 3) cfamults[x][y] = green2mult;
 		}
 	}
 	
