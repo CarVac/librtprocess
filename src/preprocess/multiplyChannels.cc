@@ -27,7 +27,7 @@
 
 using namespace librtprocess;
 
-rpError WB_apply(int width, int height, float ** rawData, float redmult, float green1mult, float green2mult, float bluemult, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel)
+rpError multiplyChannels(int width, int height, float ** rawData, float redmult, float green1mult, float green2mult, float bluemult, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel)
 {
 	BENCHFUN
 	
@@ -39,7 +39,7 @@ rpError WB_apply(int width, int height, float ** rawData, float redmult, float g
 	
 	if (!validateBayerCfa(4, cfarray)) {
         return RP_WRONG_CFA;
-    }
+	}
 	
 	for (int x=0; x<2; x++) {
 		for (int y=0; y<2; y++) {
@@ -51,7 +51,7 @@ rpError WB_apply(int width, int height, float ** rawData, float redmult, float g
 	}
 	
 	double progress = 0.0;
-    setProgCancel(progress);
+	setProgCancel(progress);
 
 	#pragma omp parallel for 
 	for (int y=0; y<height; y+=2) {

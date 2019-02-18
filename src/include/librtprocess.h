@@ -38,6 +38,6 @@ rpError vng4_demosaic (int width, int height, const float * const *rawData, floa
 rpError igv_demosaic(int winw, int winh, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel);
 rpError lmmse_demosaic(int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel, int iterations);
 rpError CA_correct(int winx, int winy, int winw, int winh, const bool autoCA, size_t autoIterations, const double cared, const double cablue, bool avoidColourshift, const float * const *rawDataIn, float **rawDataOut, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel, double fitParams[2][2][16], bool fitParamsIn, float inputScale = 65535.f, float outputScale = 65535.f);
-rpError WB_apply(int width, int height, float ** rawData, float redmult, float green1mult, float green2mult, float bluemult, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel);
+rpError multiplyChannels(int width, int height, float ** rawData, float redmult, float green1mult, float green2mult, float bluemult, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel);
 
 #endif
