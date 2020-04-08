@@ -20,7 +20,7 @@ set(rtprocess_SRCS
     preprocess/CA_correct.cc
     postprocess/hilite_recon.cc)
 
-add_library(rtprocess SHARED ${rtprocess_SRCS})
+add_library(rtprocess ${rtprocess_SRCS})
 target_include_directories(rtprocess
                            PUBLIC
                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -74,46 +74,3 @@ install(TARGETS rtprocess
 install(EXPORT rtprocess-config
         NAMESPACE rtprocess::
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/rtprocess)
-
-if (WITH_STATIC_LIB)
-    add_library(rtprocess_static STATIC ${rtprocess_SRCS})
-    target_include_directories(rtprocess_static
-                               PRIVATE
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/include
-                                   )
-    target_compile_options(rtprocess_static
-                           PRIVATE
-                               ${OpenMP_CXX_FLAGS}
-                               ${DEFAULT_CXX_COMPILE_FLAGS}
-                               ${OpenMP_CXX_FLAGS}
-                               ${PROC_FLAGS})
-    set_property(TARGET
-                     rtprocess_static
-                 PROPERTY
-                     LINKER_FLAGS "${DEFAULT_LINK_FLAGS}"
-                 PROPERTY
-                     PUBLIC_HEADER "include/librtprocess.h")
-
-    if (OpenMP_FOUND)
-        target_link_libraries(rtprocess_static
-                              PRIVATE
-                                  ${OpenMP_CXX_LIBRARIES})
-    endif()
-
-    if (VERBOSE)
-        target_compile_options(rtprocess_static
-                               PRIVATE
-                                   -DVERBOSE)
-    endif()
-
-    install(TARGETS rtprocess_static
-            ARCHIVE
-                DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            LIBRARY
-                DESTINATION ${CMAKE_INSTALL_LIBDIR}
-                COMPONENT ${PROJECT_NAME}
-            RUNTIME
-                DESTINATION ${CMAKE_INSTALL_BINDIR}
-            PUBLIC_HEADER
-                DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rtprocess)
-endif()
