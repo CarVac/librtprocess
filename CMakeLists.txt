@@ -19,6 +19,19 @@ include(DefineCompilerFlags)
 
 project(rtprocess VERSION 0.11.0 LANGUAGES CXX)
 
+# SOVERSION scheme: MAJOR.MINOR.PATCH
+#   If there was an incompatible interface change:
+#     Increment MAJOR. Set MINOR and PATCH to 0
+#   If there was a compatible interface change:
+#     Increment MINOR. Set PATCH to 0
+#   If the source code was changed, but there were no interface changes:
+#     Increment PATCH.
+set(LIBRARY_VERSION_MAJOR 0)
+set(LIBRARY_VERSION_MINOR 0)
+set(LIBRARY_VERSION_PATCH 1)
+set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
+set(LIBRARY_SOVERSION ${LIBRARY_VERSION_MAJOR})
+
 # include cmake files
 include(DefineOptions.cmake)
 include(CompilerChecks.cmake)
@@ -46,21 +59,11 @@ else()
     set(RTPROCESS_LIBRARY_NAME ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
 endif()
 
-set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE INTERNAL "")
-set(LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR} CACHE INTERNAL "")
-configure_package_config_file(${PROJECT_NAME}-config.cmake.in
-                              ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
-                              PATH_VARS
-                                  INCLUDE_INSTALL_DIR LIB_INSTALL_DIR
-                              INSTALL_DESTINATION
-                                  ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
-
 write_basic_package_version_file(${PROJECT_NAME}-config-version.cmake
                                  COMPATIBILITY
                                      AnyNewerVersion)
 
 install(FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
         DESTINATION
             ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
