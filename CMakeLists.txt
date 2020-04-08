@@ -19,6 +19,19 @@ include(DefineCompilerFlags)
 
 project(rtprocess VERSION 0.11.0 LANGUAGES CXX)
 
+# SOVERSION scheme: MAJOR.MINOR.PATCH
+#   If there was an incompatible interface change:
+#     Increment MAJOR. Set MINOR and PATCH to 0
+#   If there was a compatible interface change:
+#     Increment MINOR. Set PATCH to 0
+#   If the source code was changed, but there were no interface changes:
+#     Increment PATCH.
+set(LIBRARY_VERSION_MAJOR 0)
+set(LIBRARY_VERSION_MINOR 0)
+set(LIBRARY_VERSION_PATCH 1)
+set(LIBRARY_VERSION "${LIBRARY_VERSION_MAJOR}.${LIBRARY_VERSION_MINOR}.${LIBRARY_VERSION_PATCH}")
+set(LIBRARY_SOVERSION ${LIBRARY_VERSION_MAJOR})
+
 # include cmake files
 include(DefineOptions.cmake)
 include(CompilerChecks.cmake)

@@ -38,6 +38,16 @@ set_property(TARGET
              PROPERTY
                  PUBLIC_HEADER "include/librtprocess.h")
 
+set_property(TARGET
+                 rtprocess
+             PROPERTY
+                 VERSION ${LIBRARY_VERSION})
+
+set_property(TARGET
+                 rtprocess
+             PROPERTY
+                 SOVERSION ${LIBRARY_SOVERSION})
+
 if (OpenMP_FOUND)
     target_link_libraries(rtprocess PRIVATE ${OpenMP_CXX_LIBRARIES})
 endif()
