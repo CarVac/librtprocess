@@ -22,9 +22,9 @@ set(rtprocess_SRCS
 
 add_library(rtprocess SHARED ${rtprocess_SRCS})
 target_include_directories(rtprocess
-                           PRIVATE
-                               ${CMAKE_CURRENT_SOURCE_DIR}/include
-                          )
+                           PUBLIC
+                               $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                               $<INSTALL_INTERFACE:include>)
 target_compile_options(rtprocess
                        PRIVATE
                            ${OpenMP_CXX_FLAGS}
@@ -57,8 +57,10 @@ if (VERBOSE)
                            PRIVATE
                                -DVERBOSE)
 endif()
+add_library(rtprocess::rtprocess ALIAS rtprocess)
 
 install(TARGETS rtprocess
+        EXPORT rtprocess-config
         ARCHIVE
             DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY
@@ -68,6 +70,10 @@ install(TARGETS rtprocess
             DESTINATION ${CMAKE_INSTALL_BINDIR}
         PUBLIC_HEADER
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/rtprocess)
+
+install(EXPORT rtprocess-config
+        NAMESPACE rtprocess::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/rtprocess)
 
 if (WITH_STATIC_LIB)
     add_library(rtprocess_static STATIC ${rtprocess_SRCS})
