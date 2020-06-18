@@ -108,14 +108,6 @@ public:
 
     LUT(int s, int flags = LUT_CLIP_BELOW | LUT_CLIP_ABOVE, bool initZero = false)
     {
-#ifndef NDEBUG
-
-        if (s <= 0) {
-            printf("s<=0!\n");
-        }
-
-        assert (s > 0);
-#endif
         dirty = true;
         clip = flags;
         // Add a few extra elements so [](vfloat) won't access out-of-bounds memory.
@@ -138,15 +130,6 @@ public:
     }
     void operator ()(int s, int flags = LUT_CLIP_BELOW | LUT_CLIP_ABOVE, bool initZero = false)
     {
-#ifndef NDEBUG
-
-        if (s <= 0) {
-            printf("s<=0!\n");
-        }
-
-        assert (s > 0);
-#endif
-
         if (owner && data) {
             delete[] data;
         }
