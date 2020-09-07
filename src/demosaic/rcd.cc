@@ -21,6 +21,7 @@
 
 #include "bayerhelper.h"
 #include "librtprocess.h"
+#include "opthelper.h"
 #include "rt_math.h"
 #include "StopWatch.h"
 
@@ -151,34 +152,67 @@ rpError rcd_demosaic(int width, int height, const float * const *rawData, float 
                 * STEP 3: Populate the green channel
                 */
                 // Step 3.1: Populate the green channel at blue and red CFA positions
-               for (int row = 4; row < tileRows - 4; row++) {
-                   for (int col = 4 + (fc(cfarray, row, 0) & 1), indx = row * tileSize + col; col < tilecols - 4; col += 2, indx += 2) {
+                for (int row = 4; row < tileRows - 4; row++) {
+                    int col = 4 + (fc(cfarray, row, 0) & 1);
+                    int indx = row * tileSize + col;
 
-                        // Refined vertical and horizontal local discrimination
-                        float VH_Central_Value = VH_Dir[indx];
-                        float VH_Neighbourhood_Value = 0.25f * ((VH_Dir[indx - w1 - 1] + VH_Dir[indx - w1 + 1]) + (VH_Dir[indx + w1 - 1] + VH_Dir[indx + w1 + 1]));
-
-                        float VH_Disc = std::fabs(0.5f - VH_Central_Value) < std::fabs(0.5f - VH_Neighbourhood_Value) ? VH_Neighbourhood_Value : VH_Central_Value;
-
-                        // Cardinal gradients
-                        float N_Grad = eps + std::fabs(cfa[indx - w1] - cfa[indx + w1]) + std::fabs(cfa[indx] - cfa[indx - w2]) + std::fabs(cfa[indx - w1] - cfa[indx - w3]) + std::fabs(cfa[indx - w2] - cfa[indx - w4]);
-                        float S_Grad = eps + std::fabs(cfa[indx - w1] - cfa[indx + w1]) + std::fabs(cfa[indx] - cfa[indx + w2]) + std::fabs(cfa[indx + w1] - cfa[indx + w3]) + std::fabs(cfa[indx + w2] - cfa[indx + w4]);
-                        float W_Grad = eps + std::fabs(cfa[indx -  1] - cfa[indx +  1]) + std::fabs(cfa[indx] - cfa[indx -  2]) + std::fabs(cfa[indx -  1] - cfa[indx -  3]) + std::fabs(cfa[indx -  2] - cfa[indx -  4]);
-                        float E_Grad = eps + std::fabs(cfa[indx -  1] - cfa[indx +  1]) + std::fabs(cfa[indx] - cfa[indx +  2]) + std::fabs(cfa[indx +  1] - cfa[indx +  3]) + std::fabs(cfa[indx +  2] - cfa[indx +  4]);
+#ifdef __SSE2__
+                    const vfloat zd5v = F2V(0.5f);
+                    const vfloat zd25v = F2V(0.25f);
+                    for (; col < tilecols - 7; col += 8, indx += 8) {
+                       // Cardinal gradients
+                        const vfloat cfai = LC2VFU(cfa[indx]);
+                        const vfloat N_Grad = eps + (vabsf(LC2VFU(cfa[indx - w1]) - LC2VFU(cfa[indx + w1])) + vabsf(cfai - LC2VFU(cfa[indx - w2]))) + (vabsf(LC2VFU(cfa[indx - w1]) - LC2VFU(cfa[indx - w3])) + vabsf(LC2VFU(cfa[indx - w2]) - LC2VFU(cfa[indx - w4])));
+                        const vfloat S_Grad = eps + (vabsf(LC2VFU(cfa[indx - w1]) - LC2VFU(cfa[indx + w1])) + vabsf(cfai - LC2VFU(cfa[indx + w2]))) + (vabsf(LC2VFU(cfa[indx + w1]) - LC2VFU(cfa[indx + w3])) + vabsf(LC2VFU(cfa[indx + w2]) - LC2VFU(cfa[indx + w4])));
+                        const vfloat W_Grad = eps + (vabsf(LC2VFU(cfa[indx -  1]) - LC2VFU(cfa[indx +  1])) + vabsf(cfai - LC2VFU(cfa[indx -  2]))) + (vabsf(LC2VFU(cfa[indx -  1]) - LC2VFU(cfa[indx -  3])) + vabsf(LC2VFU(cfa[indx -  2]) - LC2VFU(cfa[indx -  4])));
+                        const vfloat E_Grad = eps + (vabsf(LC2VFU(cfa[indx -  1]) - LC2VFU(cfa[indx +  1])) + vabsf(cfai - LC2VFU(cfa[indx +  2]))) + (vabsf(LC2VFU(cfa[indx +  1]) - LC2VFU(cfa[indx +  3])) + vabsf(LC2VFU(cfa[indx +  2]) - LC2VFU(cfa[indx +  4])));
 
                         // Cardinal pixel estimations
-                        float N_Est = cfa[indx - w1] * (1.f + (lpf[indx>>1] - lpf[(indx - w2)>>1]) / (eps + lpf[indx>>1] + lpf[(indx - w2)>>1]));
-                        float S_Est = cfa[indx + w1] * (1.f + (lpf[indx>>1] - lpf[(indx + w2)>>1]) / (eps + lpf[indx>>1] + lpf[(indx + w2)>>1]));
-                        float W_Est = cfa[indx -  1] * (1.f + (lpf[indx>>1] - lpf[(indx -  2)>>1]) / (eps + lpf[indx>>1] + lpf[(indx -  2)>>1]));
-                        float E_Est = cfa[indx +  1] * (1.f + (lpf[indx>>1] - lpf[(indx +  2)>>1]) / (eps + lpf[indx>>1] + lpf[(indx +  2)>>1]));
+                        const vfloat lpfi = LVFU(lpf[indx>>1]);
+                        const vfloat N_Est = LC2VFU(cfa[indx - w1]) + (LC2VFU(cfa[indx - w1]) * (lpfi - LVFU(lpf[(indx - w2)>>1])) / (eps + lpfi + LVFU(lpf[(indx - w2)>>1])));
+                        const vfloat S_Est = LC2VFU(cfa[indx + w1]) + (LC2VFU(cfa[indx + w1]) * (lpfi - LVFU(lpf[(indx + w2)>>1])) / (eps + lpfi + LVFU(lpf[(indx + w2)>>1])));
+                        const vfloat W_Est = LC2VFU(cfa[indx -  1]) + (LC2VFU(cfa[indx -  1]) * (lpfi - LVFU(lpf[(indx -  2)>>1])) / (eps + lpfi + LVFU(lpf[(indx -  2)>>1])));
+                        const vfloat E_Est = LC2VFU(cfa[indx +  1]) + (LC2VFU(cfa[indx +  1]) * (lpfi - LVFU(lpf[(indx +  2)>>1])) / (eps + lpfi + LVFU(lpf[(indx +  2)>>1])));
 
                         // Vertical and horizontal estimations
-                        float V_Est = (S_Grad * N_Est + N_Grad * S_Est) / (N_Grad + S_Grad);
-                        float H_Est = (W_Grad * E_Est + E_Grad * W_Est) / (E_Grad + W_Grad);
+                        const vfloat V_Est = (S_Grad * N_Est + N_Grad * S_Est) / (N_Grad + S_Grad);
+                        const vfloat H_Est = (W_Grad * E_Est + E_Grad * W_Est) / (E_Grad + W_Grad);
 
                         // G@B and G@R interpolation
-                        rgb[1][indx] = VH_Disc * H_Est + (1.f - VH_Disc) * V_Est;
+                        // Refined vertical and horizontal local discrimination
+                        const vfloat VH_Central_Value = LC2VFU(VH_Dir[indx]);
+                        const vfloat VH_Neighbourhood_Value = zd25v * ((LC2VFU(VH_Dir[indx - w1 - 1]) + LC2VFU(VH_Dir[indx - w1 + 1])) + (LC2VFU(VH_Dir[indx + w1 - 1]) + LC2VFU(VH_Dir[indx + w1 + 1])));
 
+                        const vfloat VH_Disc = vabsf(zd5v - VH_Central_Value) < vabsf(zd5v - VH_Neighbourhood_Value) ? VH_Neighbourhood_Value : VH_Central_Value;
+                        STC2VFU(rgb[1][indx], vintpf(VH_Disc, H_Est, V_Est));
+                   }
+#endif
+                   for (; col < tilecols - 4; col += 2, indx += 2) {
+                        // Cardinal gradients
+                        const float cfai = cfa[indx];
+                        const float N_Grad = eps + (std::fabs(cfa[indx - w1] - cfa[indx + w1]) + std::fabs(cfai - cfa[indx - w2])) + (std::fabs(cfa[indx - w1] - cfa[indx - w3]) + std::fabs(cfa[indx - w2] - cfa[indx - w4]));
+                        const float S_Grad = eps + (std::fabs(cfa[indx - w1] - cfa[indx + w1]) + std::fabs(cfai - cfa[indx + w2])) + (std::fabs(cfa[indx + w1] - cfa[indx + w3]) + std::fabs(cfa[indx + w2] - cfa[indx + w4]));
+                        const float W_Grad = eps + (std::fabs(cfa[indx -  1] - cfa[indx +  1]) + std::fabs(cfai - cfa[indx -  2])) + (std::fabs(cfa[indx -  1] - cfa[indx -  3]) + std::fabs(cfa[indx -  2] - cfa[indx -  4]));
+                        const float E_Grad = eps + (std::fabs(cfa[indx -  1] - cfa[indx +  1]) + std::fabs(cfai - cfa[indx +  2])) + (std::fabs(cfa[indx +  1] - cfa[indx +  3]) + std::fabs(cfa[indx +  2] - cfa[indx +  4]));
+
+                        // Cardinal pixel estimations
+                        const float lpfi = lpf[indx>>1];
+                        const float N_Est = cfa[indx - w1] * (1.f + (lpfi - lpf[(indx - w2)>>1]) / (eps + lpfi + lpf[(indx - w2)>>1]));
+                        const float S_Est = cfa[indx + w1] * (1.f + (lpfi - lpf[(indx + w2)>>1]) / (eps + lpfi + lpf[(indx + w2)>>1]));
+                        const float W_Est = cfa[indx -  1] * (1.f + (lpfi - lpf[(indx -  2)>>1]) / (eps + lpfi + lpf[(indx -  2)>>1]));
+                        const float E_Est = cfa[indx +  1] * (1.f + (lpfi - lpf[(indx +  2)>>1]) / (eps + lpfi + lpf[(indx +  2)>>1]));
+
+                        // Vertical and horizontal estimations
+                        const float V_Est = (S_Grad * N_Est + N_Grad * S_Est) / (N_Grad + S_Grad);
+                        const float H_Est = (W_Grad * E_Est + E_Grad * W_Est) / (E_Grad + W_Grad);
+
+                        // G@B and G@R interpolation
+                        // Refined vertical and horizontal local discrimination
+                        const float VH_Central_Value = VH_Dir[indx];
+                        const float VH_Neighbourhood_Value = 0.25f * ((VH_Dir[indx - w1 - 1] + VH_Dir[indx - w1 + 1]) + (VH_Dir[indx + w1 - 1] + VH_Dir[indx + w1 + 1]));
+
+                        const float VH_Disc = std::fabs(0.5f - VH_Central_Value) < std::fabs(0.5f - VH_Neighbourhood_Value) ? VH_Neighbourhood_Value : VH_Central_Value;
+                        rgb[1][indx] = VH_Disc * H_Est + (1.f - VH_Disc) * V_Est;
                     }
                 }
                 /**
