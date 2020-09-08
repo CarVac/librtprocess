@@ -63,6 +63,7 @@ Optional switches to be included in the `cmake` command:
 
 1. To build in verbose mode, include `-DVERBOSE=ON`
 2. If you make your own builds, include `-DPROC_TARGET_NUMBER=2` for maximum speed. Keep in mind that this build will only work on the machine you built it.
+3. If you want to build a static library instead of a dynamic one, include `-DBUILD_SHARED_LIBS=OFF`
 
 ## Using librtprocess:
 
