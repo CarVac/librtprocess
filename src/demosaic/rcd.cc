@@ -183,7 +183,11 @@ rpError rcd_demosaic(int width, int height, const float * const *rawData, float 
                         const vfloat VH_Central_Value = LC2VFU(VH_Dir[indx]);
                         const vfloat VH_Neighbourhood_Value = zd25v * ((LC2VFU(VH_Dir[indx - w1 - 1]) + LC2VFU(VH_Dir[indx - w1 + 1])) + (LC2VFU(VH_Dir[indx + w1 - 1]) + LC2VFU(VH_Dir[indx + w1 + 1])));
 
+#if defined(__clang__)
+                        const vfloat VH_Disc = vself(vmaskf_lt(vabsf(zd5v - VH_Central_Value), vabsf(zd5v - VH_Neighbourhood_Value)), VH_Neighbourhood_Value, VH_Central_Value);
+#else
                         const vfloat VH_Disc = vabsf(zd5v - VH_Central_Value) < vabsf(zd5v - VH_Neighbourhood_Value) ? VH_Neighbourhood_Value : VH_Central_Value;
+#endif
                         STC2VFU(rgb[1][indx], vintpf(VH_Disc, H_Est, V_Est));
                    }
 #endif
