@@ -142,10 +142,10 @@ rpError bayerfast_demosaic(int width, int height, const float * const *rawData, 
 
                             } else {
                                 //compute directional weights using image gradients
-                                const float wtu = INVGRAD((abs(rawData[i + 1][j] - rawData[i - 1][j]) + abs(rawData[i][j] - rawData[i - 2][j]) + abs(rawData[i - 1][j] - rawData[i - 3][j])));
-                                const float wtd = INVGRAD((abs(rawData[i - 1][j] - rawData[i + 1][j]) + abs(rawData[i][j] - rawData[i + 2][j]) + abs(rawData[i + 1][j] - rawData[i + 3][j])));
-                                const float wtl = INVGRAD((abs(rawData[i][j + 1] - rawData[i][j - 1]) + abs(rawData[i][j] - rawData[i][j - 2]) + abs(rawData[i][j - 1] - rawData[i][j - 3])));
-                                const float wtr = INVGRAD((abs(rawData[i][j - 1] - rawData[i][j + 1]) + abs(rawData[i][j] - rawData[i][j + 2]) + abs(rawData[i][j + 1] - rawData[i][j + 3])));
+                                const float wtu = INVGRAD((std::fabs(rawData[i + 1][j] - rawData[i - 1][j]) + std::fabs(rawData[i][j] - rawData[i - 2][j]) + std::fabs(rawData[i - 1][j] - rawData[i - 3][j])));
+                                const float wtd = INVGRAD((std::fabs(rawData[i - 1][j] - rawData[i + 1][j]) + std::fabs(rawData[i][j] - rawData[i + 2][j]) + std::fabs(rawData[i + 1][j] - rawData[i + 3][j])));
+                                const float wtl = INVGRAD((std::fabs(rawData[i][j + 1] - rawData[i][j - 1]) + std::fabs(rawData[i][j] - rawData[i][j - 2]) + std::fabs(rawData[i][j - 1] - rawData[i][j - 3])));
+                                const float wtr = INVGRAD((std::fabs(rawData[i][j - 1] - rawData[i][j + 1]) + std::fabs(rawData[i][j] - rawData[i][j + 2]) + std::fabs(rawData[i][j + 1] - rawData[i][j + 3])));
 
                                 //store in rgb array the interpolated G value at R/B grid points using directional weighted average
                                 greentile[rr * TS + cc] = (wtu * rawData[i - 1][j] + wtd * rawData[i + 1][j] + wtl * rawData[i][j - 1] + wtr * rawData[i][j + 1]) / (wtu + wtd + wtl + wtr);
