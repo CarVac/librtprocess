@@ -159,20 +159,21 @@ rpError rcd_demosaic(int width, int height, const float * const *rawData, float 
 #ifdef __SSE2__
                     const vfloat zd5v = F2V(0.5f);
                     const vfloat zd25v = F2V(0.25f);
+                    const vfloat epsv = F2V(eps);
                     for (; col < tilecols - 7; col += 8, indx += 8) {
                        // Cardinal gradients
                         const vfloat cfai = LC2VFU(cfa[indx]);
-                        const vfloat N_Grad = eps + (vabsf(LC2VFU(cfa[indx - w1]) - LC2VFU(cfa[indx + w1])) + vabsf(cfai - LC2VFU(cfa[indx - w2]))) + (vabsf(LC2VFU(cfa[indx - w1]) - LC2VFU(cfa[indx - w3])) + vabsf(LC2VFU(cfa[indx - w2]) - LC2VFU(cfa[indx - w4])));
-                        const vfloat S_Grad = eps + (vabsf(LC2VFU(cfa[indx - w1]) - LC2VFU(cfa[indx + w1])) + vabsf(cfai - LC2VFU(cfa[indx + w2]))) + (vabsf(LC2VFU(cfa[indx + w1]) - LC2VFU(cfa[indx + w3])) + vabsf(LC2VFU(cfa[indx + w2]) - LC2VFU(cfa[indx + w4])));
-                        const vfloat W_Grad = eps + (vabsf(LC2VFU(cfa[indx -  1]) - LC2VFU(cfa[indx +  1])) + vabsf(cfai - LC2VFU(cfa[indx -  2]))) + (vabsf(LC2VFU(cfa[indx -  1]) - LC2VFU(cfa[indx -  3])) + vabsf(LC2VFU(cfa[indx -  2]) - LC2VFU(cfa[indx -  4])));
-                        const vfloat E_Grad = eps + (vabsf(LC2VFU(cfa[indx -  1]) - LC2VFU(cfa[indx +  1])) + vabsf(cfai - LC2VFU(cfa[indx +  2]))) + (vabsf(LC2VFU(cfa[indx +  1]) - LC2VFU(cfa[indx +  3])) + vabsf(LC2VFU(cfa[indx +  2]) - LC2VFU(cfa[indx +  4])));
+                        const vfloat N_Grad = epsv + (vabsf(LC2VFU(cfa[indx - w1]) - LC2VFU(cfa[indx + w1])) + vabsf(cfai - LC2VFU(cfa[indx - w2]))) + (vabsf(LC2VFU(cfa[indx - w1]) - LC2VFU(cfa[indx - w3])) + vabsf(LC2VFU(cfa[indx - w2]) - LC2VFU(cfa[indx - w4])));
+                        const vfloat S_Grad = epsv + (vabsf(LC2VFU(cfa[indx - w1]) - LC2VFU(cfa[indx + w1])) + vabsf(cfai - LC2VFU(cfa[indx + w2]))) + (vabsf(LC2VFU(cfa[indx + w1]) - LC2VFU(cfa[indx + w3])) + vabsf(LC2VFU(cfa[indx + w2]) - LC2VFU(cfa[indx + w4])));
+                        const vfloat W_Grad = epsv + (vabsf(LC2VFU(cfa[indx -  1]) - LC2VFU(cfa[indx +  1])) + vabsf(cfai - LC2VFU(cfa[indx -  2]))) + (vabsf(LC2VFU(cfa[indx -  1]) - LC2VFU(cfa[indx -  3])) + vabsf(LC2VFU(cfa[indx -  2]) - LC2VFU(cfa[indx -  4])));
+                        const vfloat E_Grad = epsv + (vabsf(LC2VFU(cfa[indx -  1]) - LC2VFU(cfa[indx +  1])) + vabsf(cfai - LC2VFU(cfa[indx +  2]))) + (vabsf(LC2VFU(cfa[indx +  1]) - LC2VFU(cfa[indx +  3])) + vabsf(LC2VFU(cfa[indx +  2]) - LC2VFU(cfa[indx +  4])));
 
                         // Cardinal pixel estimations
                         const vfloat lpfi = LVFU(lpf[indx>>1]);
-                        const vfloat N_Est = LC2VFU(cfa[indx - w1]) + (LC2VFU(cfa[indx - w1]) * (lpfi - LVFU(lpf[(indx - w2)>>1])) / (eps + lpfi + LVFU(lpf[(indx - w2)>>1])));
-                        const vfloat S_Est = LC2VFU(cfa[indx + w1]) + (LC2VFU(cfa[indx + w1]) * (lpfi - LVFU(lpf[(indx + w2)>>1])) / (eps + lpfi + LVFU(lpf[(indx + w2)>>1])));
-                        const vfloat W_Est = LC2VFU(cfa[indx -  1]) + (LC2VFU(cfa[indx -  1]) * (lpfi - LVFU(lpf[(indx -  2)>>1])) / (eps + lpfi + LVFU(lpf[(indx -  2)>>1])));
-                        const vfloat E_Est = LC2VFU(cfa[indx +  1]) + (LC2VFU(cfa[indx +  1]) * (lpfi - LVFU(lpf[(indx +  2)>>1])) / (eps + lpfi + LVFU(lpf[(indx +  2)>>1])));
+                        const vfloat N_Est = LC2VFU(cfa[indx - w1]) + (LC2VFU(cfa[indx - w1]) * (lpfi - LVFU(lpf[(indx - w2)>>1])) / (epsv + lpfi + LVFU(lpf[(indx - w2)>>1])));
+                        const vfloat S_Est = LC2VFU(cfa[indx + w1]) + (LC2VFU(cfa[indx + w1]) * (lpfi - LVFU(lpf[(indx + w2)>>1])) / (epsv + lpfi + LVFU(lpf[(indx + w2)>>1])));
+                        const vfloat W_Est = LC2VFU(cfa[indx -  1]) + (LC2VFU(cfa[indx -  1]) * (lpfi - LVFU(lpf[(indx -  2)>>1])) / (epsv + lpfi + LVFU(lpf[(indx -  2)>>1])));
+                        const vfloat E_Est = LC2VFU(cfa[indx +  1]) + (LC2VFU(cfa[indx +  1]) * (lpfi - LVFU(lpf[(indx +  2)>>1])) / (epsv + lpfi + LVFU(lpf[(indx +  2)>>1])));
 
                         // Vertical and horizontal estimations
                         const vfloat V_Est = (S_Grad * N_Est + N_Grad * S_Est) / (N_Grad + S_Grad);
