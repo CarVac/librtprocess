@@ -90,11 +90,11 @@ inline void dcb_initTileLimits(int W, int H, int &colMin, int &rowMin, int &colM
     }
 
     if( y0 + TILESIZE + TILEBORDER >= H - border) {
-        rowMax = TILEBORDER + H - border - y0;
+        rowMax = std::min(TILEBORDER + H - border - y0, rowMax);
     }
 
     if( x0 + TILESIZE + TILEBORDER >= W - border) {
-        colMax = TILEBORDER + W - border - x0;
+        colMax = std::min(TILEBORDER + W - border - x0, colMax);
     }
 }
 
