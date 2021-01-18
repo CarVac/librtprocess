@@ -51,7 +51,7 @@ rpError ahd_demosaic(int width, int height, const float * const *rawData, float 
     float xyz_cam[3][3];
     LUTf cbrt(65536);
 
-    constexpr double xyz_rgb[3][3] = {        /* XYZ from RGB */
+    constexpr float xyz_rgb[3][3] = {        /* XYZ from RGB */
         { 0.412453, 0.357580, 0.180423 },
         { 0.212671, 0.715160, 0.072169 },
         { 0.019334, 0.119193, 0.950227 }

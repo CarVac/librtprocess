@@ -33,7 +33,7 @@
 namespace
 {
 
-const double xyz_rgb[3][3] = {          // XYZ from RGB
+const float xyz_rgb[3][3] = { // XYZ from RGB
     { 0.412453, 0.357580, 0.180423 },
     { 0.212671, 0.715160, 0.072169 },
     { 0.019334, 0.119193, 0.950227 }
@@ -43,14 +43,14 @@ const float d65_white[3] = { 0.950456, 1, 1.088754 };
 
 void cielab (const float (*rgb)[3], float* l, float* a, float *b, const int width, const int height, const int labWidth, const float xyz_cam[3][3])
 {
-    //sRGB epsilon and kappa
-    constexpr float eps = 216.0 / 24389.0;
-    constexpr float kappa = 24389.0 / 27.0;
     static LUTf cbrt(0x14000);
 
     if (!rgb) {
         static bool cbrtinit = false;
         if(!cbrtinit) {
+            //sRGB epsilon and kappa
+            constexpr double eps = 216.0 / 24389.0;
+            constexpr double kappa = 24389.0 / 27.0;
             for (int i = 0; i < 0x14000; i++) {
                 double r = i / 65535.0;
                 cbrt[i] = r > eps ? std::cbrt(r) : (kappa * r + 16.0) / 116.0;
