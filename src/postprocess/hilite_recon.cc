@@ -571,7 +571,7 @@ rpError HLRecovery_inpaint (const int width, const int height, float** red, floa
             if ((red[i + miny][j + minx] > thresh[0] || green[i + miny][j + minx] > thresh[1] || blue[i + miny][j + minx] > thresh[2]) &&
                     (red[i + miny][j + minx] < max_f[0] && green[i + miny][j + minx] < max_f[1] && blue[i + miny][j + minx] < max_f[2])) {
 
-                hipass_sum += channelblur[0][i][j];
+                hipass_sum += static_cast<double>(channelblur[0][i][j]);
                 hipass_norm ++;
 
                 hilite_full[0][i][j] = red[i + miny][j + minx];
@@ -583,7 +583,7 @@ rpError HLRecovery_inpaint (const int width, const int height, float** red, floa
         }
     }//end of filling highlight array
 
-    float hipass_ave = 2.f * hipass_sum / (hipass_norm + epsilon);
+    float hipass_ave = 2.0 * hipass_sum / (hipass_norm + static_cast<double>(epsilon));
 
     progress += 0.05;
     setProgCancel(progress);
@@ -777,7 +777,7 @@ rpError HLRecovery_inpaint (const int width, const int height, float** red, floa
                 if (hilite[3][i][j] > epsilon) {
                     hilite_dir4[c][j][i] = hilite[c][i][j] / hilite[3][i][j];
                 } else {
-                    hilite_dir4[c][j][i] = 0.1 * ((hilite_dir4[c][(j + 1)][(i - 2)] + hilite_dir4[c][(j + 1)][(i - 1)] + hilite_dir4[c][(j + 1)][(i)] + hilite_dir4[c][(j + 1)][(i + 1)] + hilite_dir4[c][(j + 1)][(i + 2)]) /
+                    hilite_dir4[c][j][i] = 0.1f * ((hilite_dir4[c][(j + 1)][(i - 2)] + hilite_dir4[c][(j + 1)][(i - 1)] + hilite_dir4[c][(j + 1)][(i)] + hilite_dir4[c][(j + 1)][(i + 1)] + hilite_dir4[c][(j + 1)][(i + 2)]) /
                                                   (hilite_dir4[3][(j + 1)][(i - 2)] + hilite_dir4[3][(j + 1)][(i - 1)] + hilite_dir4[3][(j + 1)][(i)] + hilite_dir4[3][(j + 1)][(i + 1)] + hilite_dir4[3][(j + 1)][(i + 2)] + epsilon));
                 }
             }
@@ -839,7 +839,7 @@ rpError HLRecovery_inpaint (const int width, const int height, float** red, floa
                 if (hilite[3][i][j] > epsilon) {
                     hilite_dir[0 + c][i][j] = hilite[c][i][j] / hilite[3][i][j];
                 } else {
-                    hilite_dir[0 + c][i][j] = 0.1 * ((hilite_dir[0 + c][i - 1][j - 2] + hilite_dir[0 + c][i - 1][j - 1] + hilite_dir[0 + c][i - 1][j] + hilite_dir[0 + c][i - 1][j + 1] + hilite_dir[0 + c][i - 1][j + 2]) /
+                    hilite_dir[0 + c][i][j] = 0.1f * ((hilite_dir[0 + c][i - 1][j - 2] + hilite_dir[0 + c][i - 1][j - 1] + hilite_dir[0 + c][i - 1][j] + hilite_dir[0 + c][i - 1][j + 1] + hilite_dir[0 + c][i - 1][j + 2]) /
                                                      (hilite_dir[0 + 3][i - 1][j - 2] + hilite_dir[0 + 3][i - 1][j - 1] + hilite_dir[0 + 3][i - 1][j] + hilite_dir[0 + 3][i - 1][j + 1] + hilite_dir[0 + 3][i - 1][j + 2] + epsilon));
                 }
             }
@@ -876,7 +876,7 @@ rpError HLRecovery_inpaint (const int width, const int height, float** red, floa
                 if (hilite[3][i][j] > epsilon) {
                     hilite_dir[4 + c][i][j] = hilite[c][i][j] / hilite[3][i][j];
                 } else {
-                    hilite_dir[4 + c][i][j] = 0.1 * ((hilite_dir[4 + c][(i + 1)][(j - 2)] + hilite_dir[4 + c][(i + 1)][(j - 1)] + hilite_dir[4 + c][(i + 1)][(j)] + hilite_dir[4 + c][(i + 1)][(j + 1)] + hilite_dir[4 + c][(i + 1)][(j + 2)]) /
+                    hilite_dir[4 + c][i][j] = 0.1f * ((hilite_dir[4 + c][(i + 1)][(j - 2)] + hilite_dir[4 + c][(i + 1)][(j - 1)] + hilite_dir[4 + c][(i + 1)][(j)] + hilite_dir[4 + c][(i + 1)][(j + 1)] + hilite_dir[4 + c][(i + 1)][(j + 2)]) /
                                                      (hilite_dir[4 + 3][(i + 1)][(j - 2)] + hilite_dir[4 + 3][(i + 1)][(j - 1)] + hilite_dir[4 + 3][(i + 1)][(j)] + hilite_dir[4 + 3][(i + 1)][(j + 1)] + hilite_dir[4 + 3][(i + 1)][(j + 2)] + epsilon));
                 }
             }
@@ -1114,7 +1114,7 @@ rpError HLRecovery_inpaint (const int width, const int height, float** red, floa
             //now correct clipped channels
             if (pixel[0] > max_f[0] && pixel[1] > max_f[1] && pixel[2] > max_f[2]) {
                 //all channels clipped
-                float Yl = (0.299 * clipfix[0] + 0.587 * clipfix[1] + 0.114 * clipfix[2]);
+                float Yl = (0.299f * clipfix[0] + 0.587f * clipfix[1] + 0.114f * clipfix[2]);
 
                 float mult = whitept / Yl;
                 red[i + miny][j + minx]   = clipfix[0] * mult; //factor;
@@ -1139,7 +1139,7 @@ rpError HLRecovery_inpaint (const int width, const int height, float** red, floa
                 }
             }
 
-            Y = (0.299 * red[i + miny][j + minx] + 0.587 * green[i + miny][j + minx] + 0.114 * blue[i + miny][j + minx]);
+            Y = (0.299f * red[i + miny][j + minx] + 0.587f * green[i + miny][j + minx] + 0.114f * blue[i + miny][j + minx]);
 
             if (Y > whitept) {
                 float mult = whitept / Y;
