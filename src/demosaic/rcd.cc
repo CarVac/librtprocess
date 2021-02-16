@@ -62,7 +62,7 @@ rpError rcd_demosaic(int width, int height, const float * const *rawData, float 
     setProgCancel(progress);
     
     constexpr int tileBorder = 9; // avoid tile-overlap errors
-    constexpr int rcdBorder = 6;  // for the outermost tiles we can have a smaller outer border
+    constexpr int rcdBorder = 9;
     constexpr int tileSize = 194;
     constexpr int tileSizeN = tileSize - 2 * tileBorder;
     const int numTh = height / (tileSizeN) + ((height % (tileSizeN)) ? 1 : 0);
