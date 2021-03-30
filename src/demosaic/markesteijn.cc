@@ -24,7 +24,7 @@
 
 #include "librtprocess.h"
 #include "LUT.h"
-#include "sleef.c"
+#include "sleef.h"
 #include "rt_math.h"
 #include "opthelper.h"
 #include "StopWatch.h"

@@ -34,7 +34,7 @@
 #include "bayerhelper.h"
 #include "librtprocess.h"
 #include "rt_math.h"
-#include "sleef.c"
+#include "sleef.h"
 #include "opthelper.h"
 #include "median.h"
 #include "StopWatch.h"

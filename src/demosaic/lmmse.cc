@@ -20,7 +20,7 @@
 
 #include "bayerhelper.h"
 #include "rt_math.h"
-#include "sleef.c"
+#include "sleef.h"
 #include "librtprocess.h"
 #include "LUT.h"
 #include "opthelper.h"

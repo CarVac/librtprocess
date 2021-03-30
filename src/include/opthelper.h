@@ -25,7 +25,7 @@
     #define pow_F(a,b) (xexpf(b*xlogf(a)))
 
     #ifdef __SSE2__
-        #include "sleefsseavx.c"
+        #include "sleefsseavx.h"
     #endif
 
     #ifdef __GNUC__
