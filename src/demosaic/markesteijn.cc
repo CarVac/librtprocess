@@ -126,7 +126,7 @@ void cielab (const float (*rgb)[3], float* l, float* a, float *b, const int widt
 */
 
 using namespace librtprocess;
-rpError markesteijn_demosaic (int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned xtrans[6][6], const float rgb_cam[3][4], const std::function<bool(double)> &setProgCancel, const int passes, const bool useCieLab, size_t chunkSize, bool measure)
+rpError markesteijn_demosaic (int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned xtrans[6][6], const float rgb_cam[3][4], const std::function<bool(double)> &setProgCancel, const int passes, const bool useCieLab, std::size_t chunkSize, bool measure)
 {
     BENCHFUN
     std::unique_ptr<StopWatch> stop;
