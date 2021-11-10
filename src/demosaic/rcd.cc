@@ -42,7 +42,7 @@ using namespace librtprocess;
 // coefficients in an exact, shorter and more performant formula.
 // In cooperation with Hanno Schwalm (hanno@schwalm-bremen.de) and Luis Sanz Rodriguez this has been tuned for performance.
 
-rpError rcd_demosaic(int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel, size_t chunkSize, bool measure, bool multiThread)
+rpError rcd_demosaic(int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel, std::size_t chunkSize, bool measure, bool multiThread)
 {
     BENCHFUN
 
