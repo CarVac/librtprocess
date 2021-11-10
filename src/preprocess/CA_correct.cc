@@ -119,7 +119,7 @@ rpError CA_correct(
     int winw,
     int winh,
     const bool autoCA,
-    size_t autoIterations,
+    std::size_t autoIterations,
     const double cared,
     const double cablue,
     bool avoidColourshift,
@@ -131,7 +131,7 @@ rpError CA_correct(
     bool fitParamsIn,
     float inputScale,
     float outputScale,
-    size_t chunkSize,
+    std::size_t chunkSize,
     bool measure
 )
 {
