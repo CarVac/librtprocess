@@ -41,7 +41,7 @@
 
 using namespace librtprocess;
 
-rpError amaze_demosaic(int raw_width, int raw_height, int winx, int winy, int winw, int winh, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel, double initGain, int border, float inputScale, float outputScale, size_t chunkSize, bool measure)
+rpError amaze_demosaic(int raw_width, int raw_height, int winx, int winy, int winw, int winh, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel, double initGain, int border, float inputScale, float outputScale, std::size_t chunkSize, bool measure)
 {
     BENCHFUN
     std::unique_ptr<StopWatch> stop;
