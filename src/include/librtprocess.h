@@ -20,6 +20,8 @@
 #ifndef _LIBRTPROCESS_
 #define _LIBRTPROCESS_
 
+#include <stddef.h>
+
 #include <functional>
 #include <cstddef>
 
