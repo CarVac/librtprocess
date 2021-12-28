@@ -17,6 +17,8 @@ librtprocess currently is maintained by developers of the following projects:
 
 . rawproc https://github.com/butcherg/rawproc
 
+. MLVApp https://github.com/ilia3101/MLV-App
+
 . RawTherapee https://github.com/Beep6581/RawTherapee
 
 ... the latter is where currently all the code comes from ;-)
