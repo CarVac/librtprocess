@@ -494,7 +494,10 @@ rpError HLRecovery_inpaint (const int width, const int height, float** red, floa
     int miny = height - 1;
     int maxy = 0;
 
+// Current MSVC version doesn't support these way of calling OMP
+#ifndef _MSC_VER
     #pragma omp parallel for reduction(min:minx,miny) reduction(max:maxx,maxy) schedule(dynamic, 16)
+#endif
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j< width; ++j) {
             if(red[i][j] >= max_f[0] || green[i][j] >= max_f[1] || blue[i][j] >= max_f[2]) {
