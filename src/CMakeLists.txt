@@ -25,6 +25,13 @@ target_include_directories(rtprocess
                            PUBLIC
                                $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                                $<INSTALL_INTERFACE:include>)
+
+if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(rtprocess
+                               PRIVATE
+                                LIBRTPROCESS_STATIC)
+endif()
+
 target_compile_options(rtprocess
                        PRIVATE
                            ${OpenMP_CXX_FLAGS}

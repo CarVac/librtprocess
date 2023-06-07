@@ -25,14 +25,22 @@
 #include <functional>
 #include <cstddef>
 
-#if defined( __WIN32__ ) || defined( _WIN32 )
-#   if defined( rtprocess_EXPORTS )
-#       define RTPROCESS_API __declspec( dllexport )
+#ifndef LIBRTPROCESS_STATIC
+// DLL interface export/import macros are only available for MSVC for now, 
+// in order to keep compatibility with previous versions of librtprocess 
+//#   if defined( __WIN32__ ) || defined( _WIN32 )
+#   ifdef _MSC_VER
+#       if defined( rtprocess_EXPORTS ) 
+#           define RTPROCESS_API __declspec( dllexport )
+#       else
+#           define RTPROCESS_API __declspec( dllimport )
+#       endif
 #   else
-#       define RTPROCESS_API __declspec( dllimport )
+//#     define RTPROCESS_API  __attribute__ ((visibility("default")))
+#       define RTPROCESS_API
 #   endif
-#else // non-windwos platform
-#   define RTPROCESS_API  __attribute__ ((visibility("default")))
+#else 
+#   define RTPROCESS_API
 #endif
 
 enum rpError {RP_NO_ERROR, RP_MEMORY_ERROR, RP_WRONG_CFA, RP_CACORRECT_ERROR};
