@@ -18,7 +18,8 @@ set(rtprocess_SRCS
     demosaic/vng4.cc
     demosaic/xtransfast.cc
     preprocess/CA_correct.cc
-    postprocess/hilite_recon.cc)
+    postprocess/hilite_recon.cc
+    c_api/librtprocess_c_api.cpp)
 
 add_library(rtprocess ${rtprocess_SRCS})
 target_include_directories(rtprocess

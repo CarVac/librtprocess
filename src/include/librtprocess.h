@@ -22,8 +22,11 @@
 
 #include <stddef.h>
 
-#include <functional>
-#include <cstddef>
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
+
+
 
 #ifndef LIBRTPROCESS_STATIC
 // DLL interface export/import macros are only available for MSVC for now, 
@@ -44,6 +47,12 @@
 #endif
 
 enum rpError {RP_NO_ERROR, RP_MEMORY_ERROR, RP_WRONG_CFA, RP_CACORRECT_ERROR};
+
+#ifdef __cplusplus
+
+#include <functional>
+#include <cstddef>
+
 RTPROCESS_API rpError bayerborder_demosaic(int winw, int winh, int lborders, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2]);
 RTPROCESS_API void xtransborder_demosaic(int winw, int winh, int border, const float * const *rawData, float **red, float **green, float **blue, const unsigned xtrans[6][6]);
 RTPROCESS_API rpError ahd_demosaic (int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], const float rgb_cam[3][4], const std::function<bool(double)> &setProgCancel);
@@ -60,5 +69,29 @@ RTPROCESS_API rpError lmmse_demosaic(int width, int height, const float * const 
 // for CA_correct rawDataIn and rawDataOut may point to the same buffer. That's handled fine inside CA_correct
 RTPROCESS_API rpError CA_correct(int winx, int winy, int winw, int winh, const bool autoCA, std::size_t autoIterations, const double cared, const double cablue, bool avoidColourshift, const float * const *rawDataIn, float **rawDataOut, const unsigned cfarray[2][2], const std::function<bool(double)> &setProgCancel, double fitParams[2][2][16], bool fitParamsIn, float inputScale = 65535.f, float outputScale = 65535.f, size_t chunkSize = 2, bool measure = false);
 RTPROCESS_API rpError HLRecovery_inpaint(const int width, const int height, float **red, float **green, float **blue, const float chmax[3], const float clmax[3], const std::function<bool(double)> &setProgCancel);
+
+extern "C" {
+
+#endif
+
+RTPROCESS_API enum rpError rt_process_bayerborder_demosaic_c_api(int winw, int winh, int lborders, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2]);
+RTPROCESS_API void rt_process_xtransborder_demosaic_c_api(int winw, int winh, int border, const float * const *rawData, float **red, float **green, float **blue, const unsigned xtrans[6][6]);
+RTPROCESS_API enum rpError rt_process_ahd_demosaic_c_api(int width, int height, const float* const* rawData, float** red, float** green, float** blue, const unsigned cfarray[2][2], const float rgb_cam[3][4], bool(* setProgCancel)(double));
+RTPROCESS_API enum rpError rt_process_amaze_demosaic_c_api(int raw_width, int raw_height, int winx, int winy, int winw, int winh, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], bool(* setProgCancel)(double), double initGain, int border, float inputScale, float outputScale, size_t chunkSize, bool measure);
+RTPROCESS_API enum rpError rt_process_bayerfast_demosaic_c_api(int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], bool(* setProgCancel)(double), double initGain);
+RTPROCESS_API enum rpError rt_process_dcb_demosaic_c_api(int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], bool(* setProgCancel)(double), int iterations, bool dcb_enhance);
+RTPROCESS_API enum rpError rt_process_hphd_demosaic_c_api(int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], bool(* setProgCancel)(double));
+RTPROCESS_API enum rpError rt_process_rcd_demosaic_c_api(int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], bool(* setProgCancel)(double), size_t chunkSize, bool measure, bool multiThread);
+RTPROCESS_API enum rpError rt_process_markesteijn_demosaic_c_api(int width, int height, const float * const *rawdata, float **red, float **green, float **blue, const unsigned xtrans[6][6], const float rgb_cam[3][4], bool(* setProgCancel)(double), const int passes, const bool useCieLab, size_t chunkSize, bool measure);
+RTPROCESS_API enum rpError rt_process_xtransfast_demosaic_c_api(int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned xtrans[6][6], bool(* setProgCancel)(double));
+RTPROCESS_API enum rpError rt_process_vng4_demosaic_c_api (int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], bool(* setProgCancel)(double));
+RTPROCESS_API enum rpError rt_process_igv_demosaic_c_api(int winw, int winh, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], bool(* setProgCancel)(double));
+RTPROCESS_API enum rpError rt_process_lmmse_demosaic_c_api(int width, int height, const float * const *rawData, float **red, float **green, float **blue, const unsigned cfarray[2][2], bool(* setProgCancel)(double), int iterations);
+RTPROCESS_API enum rpError rt_process_CA_correct_c_api(int winx, int winy, int winw, int winh, const bool autoCA, size_t autoIterations, const double cared, const double cablue, bool avoidColourshift, const float * const *rawDataIn, float **rawDataOut, const unsigned cfarray[2][2], bool(* setProgCancel)(double), double fitParams[2][2][16], bool fitParamsIn, float inputScale, float outputScale, size_t chunkSize, bool measure);
+RTPROCESS_API enum rpError rt_process_HLRecovery_inpaint_c_api(const int width, const int height, float **red, float **green, float **blue, const float chmax[3], const float clmax[3], bool(* setProgCancel)(double));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
